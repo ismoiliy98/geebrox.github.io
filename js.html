@@ -37,15 +37,15 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
     <script>
-    	var studentJSON = read_cookie('students_list');
+    	var studentJSON = read_cookie('sl');
 
     	if(!studentJSON) {
     		studentJSON = {
-	    		"students": []
+	    		"s": []
 	    	};
     	}
 
-    	var students_list = studentJSON.students;
+    	var students_list = studentJSON.s;
     	var table = document.getElementById("table_body");
     	var last_id = 0;
 
@@ -60,7 +60,7 @@
     		if(fname.length < 3 || lname.length < 3 || group.length < 3)
     			return;
 
-    		students_list.push({"first_name": fname, "last_name": lname, "group": group});
+    		students_list.push({"f": fname, "l": lname, "g": group});
     		UpdateStudentsTable();
     	}
 
@@ -90,16 +90,16 @@
 	    			'<tr class="table_row"><th scope="row">' +
 	    				++last_id +
 	    			'</th><td>' +
-	    				students_list[student].first_name +
+	    				students_list[student].f +
 	    			'</td><td>' +
-	    				students_list[student].last_name +
+	    				students_list[student].l +
 	    			'</td><td>' +
-	    				students_list[student].group +
+	    				students_list[student].g +
 	    			'</td><td><button type="button" class="btn btn-secondary remove_element" onclick="RemoveElementFromTable(event, this)"><i class="fas fa-minus-square"></i></button></td></tr>'
 	    		);
 
-	    		delete_cookie('students_list');
-	    		bake_cookie('students_list', studentJSON);
+	    		delete_cookie('sl');
+	    		bake_cookie('sl', studentJSON);
 	    	}
     	}
 
