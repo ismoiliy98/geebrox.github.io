@@ -116,10 +116,10 @@ onDocumentReady(() => {
       laodingCircle.style.strokeDasharray = `${loadingPercentage}, 100`;
 
       if (loadingPercentage < 80) {
-        loadingPercentage += 0.2;
-      } else if (loadingPercentage < 100) {
-        userAlertEl.innerHTML = "Almost there...";
         loadingPercentage += 0.1;
+      } else if (loadingPercentage < 100 && loadingPercentage > 80) {
+        userAlertEl.innerHTML = "Almost there...";
+        loadingPercentage += 0.05;
       } else {
         userAlertEl.innerHTML =
           "Ready! You can open console and enjoy <b>Bad Apple!</b>";
