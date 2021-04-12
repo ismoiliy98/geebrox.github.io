@@ -117,7 +117,7 @@ onDocumentReady(() => {
 
       if (loadingPercentage < 80) {
         loadingPercentage += 0.1;
-      } else if (loadingPercentage < 100 && loadingPercentage > 80) {
+      } else if (loadingPercentage < 100 && loadingPercentage >= 80) {
         userAlertEl.innerHTML = "Almost there...";
         loadingPercentage += 0.05;
       } else {
