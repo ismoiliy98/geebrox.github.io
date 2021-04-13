@@ -18,39 +18,29 @@ const loadAudio = (audioCtx) =>
     request.send();
   });
 
-const getFrameStyle = (url, width, height) =>
-  [
-    "font-size: 1px;",
-    `line-height: ${height % 2}px;`,
-    `padding: ${height * 0.5}px ${width * 0.5}px;`,
-    `background-size: ${width}px ${height}px;`,
-    `background: url('${location.origin}${url}');`,
-  ].join(" ");
-
-const loadFrame = (url) =>
+const loadFrames = () =>
   new Promise((resolve, reject) => {
-    const image = new Image(480, 360);
+    fetch("/ba")
+      .then((res) => res.arrayBuffer())
+      .then((data) => {
+        const lzmaData = new Uint8Array(data);
 
-    image.onload = () => resolve(getFrameStyle(url, image.width, image.height));
-    image.onerror = reject;
+        LZMA.decompress(
+          lzmaData,
+          (res, error) => {
+            if (error) {
+              reject(error);
+            }
 
-    image.src = url;
+            resolve(JSON.parse(res));
+          },
+          (progress) => {
+            loadingPercentage = progress * 100;
+          }
+        );
+      })
+      .catch(reject);
   });
-
-const loadFrames = async () => {
-  const framesCount = 2191;
-  const framesList = [];
-
-  for (let i = 1; i <= framesCount; i++) {
-    framesList.push(
-      loadFrame(
-        `/frames/ba%20${`${i}`.padStart(`${framesCount}`.length, 0)}.jpg`
-      )
-    );
-  }
-
-  return await Promise.all(framesList);
-};
 
 const createDrawer = (framesList, audioCtx, duration, onFinish = () => !0) => {
   const framesCount = framesList.length;
@@ -77,15 +67,12 @@ const createDrawer = (framesList, audioCtx, duration, onFinish = () => !0) => {
 
 const start = async () => {
   try {
-    loadingPercentage = 10;
     const framesList = await loadFrames();
-    loadingPercentage = 80;
 
     const audioCtx = new AudioContext();
     const audioSource = audioCtx.createBufferSource();
 
     audioSource.buffer = await loadAudio(audioCtx);
-    loadingPercentage = 100;
     audioSource.connect(audioCtx.destination);
     const { duration } = audioSource.buffer;
 
@@ -115,15 +102,12 @@ onDocumentReady(() => {
       loadingPercentageEl.innerHTML = `${loadingPercentage.toFixed(0)}%`;
       laodingCircle.style.strokeDasharray = `${loadingPercentage}, 100`;
 
-      if (loadingPercentage < 80) {
-        loadingPercentage += 0.1;
-      } else if (loadingPercentage < 100 && loadingPercentage >= 80) {
-        userAlertEl.innerHTML = "Almost there...";
-        loadingPercentage += 0.05;
-      } else {
+      if (loadingPercentage >= 100) {
         userAlertEl.innerHTML =
           "Ready! You can open console and enjoy <b>Bad Apple!</b>";
         return;
+      } else if (loadingPercentage >= 65) {
+        userAlertEl.innerHTML = "Almost there...";
       }
 
       requestAnimationFrame(updateLoadingProgress);
