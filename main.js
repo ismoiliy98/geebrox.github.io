@@ -76,8 +76,13 @@ const start = async () => {
     audioSource.connect(audioCtx.destination);
     const { duration } = audioSource.buffer;
 
-    const onFinish = () => audioSource.stop();
+    const onFinish = () => {
+      audioSource.stop();
+      console.clear();
+      document.body.style.filter = "grayscale(0)";
+    };
 
+    document.body.style.filter = "grayscale(1)";
     createDrawer(framesList, audioCtx, duration, onFinish).draw();
     audioSource.start();
   } catch (error) {
